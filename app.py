@@ -8,6 +8,8 @@ import warnings
 warnings.filterwarnings('ignore')
 import pickle
 import streamlit as st
+from Fun import Multi_disease
+MD = Multi_disease()
 
 # Setting Page Configuration
 st.set_page_config(page_title='Multiple Diseases Prediction', 
@@ -87,10 +89,6 @@ def Ckd_Home():
         form_data['appetite'] = c2.selectbox('Appetite',options=['good','poor'])
         form_data['pulmonary_edema'] = c3.selectbox('Pulmonary Edema',options=['yes','no'])
         form_data['anemia'] = c4.selectbox('Anemia',options=['yes','no'])
-        
-        
-
-
 
         submit_button = st.form_submit_button(label = 'submit')
 
@@ -108,11 +106,30 @@ def Ckd_Home():
     ############# File Upload Layout to predict attrition #############
     file_upload = st.file_uploader('Upload CSV file for Bulk Prediction',type='csv',key='file_uploader')
     if file_upload is not None:
-        df = pd.read_csv(file_upload)
+        df = pd.read_csv(file_upload,index_col=0)
         st.success('File Uploaded Successfully')
+        df = MD.ckd_Fun(df)
+        if 'classification' in df.columns:
+            df.drop(columns=['classification'],inplace=True)
         
-    
+        result_df = (ckd_model.predict_proba(df)[:,1]>=0.2).astype('int')
+        result_df = pd.DataFrame(
+                            dict(zip(df.index,result_df)).items(),
+                            columns=['id','classification']).set_index('id')
+        
+        result_df['classification'] = result_df['classification'].replace({1:'ckd',0:'notckd'})
+        result_df = pd.merge(result_df,df,how='inner',on='id') 
+        result_df_1 = result_df[result_df['classification']=='ckd']
+        result_df_2 = result_df[result_df['classification']=='notckd']
 
+        c1,c2 = st.columns(2)
+        c1.error(f'The number of persons having Chronic Kidney Disease are {result_df_1.shape[0]}')
+        c1.dataframe(result_df_1)
+        c2.success(f'The number of persons not having Chronic Kidney Disease are {result_df_2.shape[0]}')
+        c2.dataframe(result_df_2)
+        
+
+        
 
 
 def Ckd_Prediction():
