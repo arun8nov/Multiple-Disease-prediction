@@ -27,3 +27,24 @@ class Multi_disease:
         df = df.replace("?", np.nan)
 
         return df
+    
+    def cld_Fun(self,df):
+
+            df.columns = [i.lower() for i in df.columns]
+
+            for i in df.select_dtypes(include='object').columns:
+                df[i] = df[i].apply(lambda x: x.lower())
+            
+            df.reset_index(drop=True,inplace=True)
+
+            if 'AST/ALT_rati0' in df.columns:
+                df = df
+            else:
+                df['AST/ALT_ratio'] = df['aspartate_aminotransferase'] / df['alamine_aminotransferase']
+ 
+            df = df[['age', 'gender', 'total_bilirubin', 'direct_bilirubin',
+                'alkaline_phosphotase', 'alamine_aminotransferase',
+                'aspartate_aminotransferase', 'AST/ALT_ratio', 'total_protiens', 'albumin',
+                'albumin_and_globulin_ratio' ]]
+            
+            return df

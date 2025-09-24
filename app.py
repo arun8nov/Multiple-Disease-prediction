@@ -129,15 +129,90 @@ def Ckd_Home():
         c2.dataframe(result_df_2)
         
 
+def liver_Home():
+    c1,c2 = st.columns([0.2,2])
+    c1.image('cld_logo.png')
+    c2.title("Chronic Liver Disease Prediction")
+
+    cld_model = pickle.load(open('cld_model.pkl','rb'))
+
+    form_data = {'age': None,
+                'gender': None,
+                'total_bilirubin': None,
+                'direct_bilirubin': None,
+                'alkaline_phosphotase': None,
+                'alamine_aminotransferase': None,
+                'aspartate_aminotransferase': None,
+                'total_protiens': None,
+                'albumin': None,
+                'albumin_and_globulin_ratio': None}
         
+    with st.form(key = 'Chronic liver Disease Prediction'):
+
+        c1,c2,c3,c4 = st.columns(4)
+        form_data['age'] = c1.number_input('Age',min_value=1,max_value=120)
+        form_data['gender'] = c2.selectbox('Gender',options=['male','female'])
+        form_data['total_bilirubin'] = c3.number_input('Total Bilirubin')
+        form_data['direct_bilirubin'] = c4.number_input('Direct Bilirubin')
+
+        c1,c2,c3,c4 = st.columns(4)
+        form_data['alkaline_phosphotase'] = c1.number_input('ALP (Alkaline Phosphatase)')
+        form_data['alamine_aminotransferase'] =c2.number_input('ALT (Alanine Aminotransferase, SGPT)')
+        form_data['aspartate_aminotransferase'] = c3.number_input('AST (Aspartate Aminotransferase, SGOT)')
+        form_data['total_protiens'] =c4.number_input('Total Protein')
+
+        c1,c2,c3,c4 = st.columns(4)
+        form_data['albumin'] = c1.number_input('Albumin')
+        form_data['albumin_and_globulin_ratio'] =c2.number_input('A/G Ratio')
 
 
-def Ckd_Prediction():
-    st.title('Chronic Kidney Disease Prediction')
+        submit_button = st.form_submit_button(label='Submit')
+
+        if submit_button:
+            st.success("Form Submitted Successfully")
+            st.write('The Given Form Data is')
+            st.table(form_data)
+            data = pd.DataFrame(form_data,index=[0])
+            data = MD.cld_Fun(data)
+            result = cld_model.predict(data)
+
+            if result == 0:
+                st.success("The Patient is Healthy")
+            if result == 1:
+                st.error("The Patient having mild infection in Liver ")
+            if result == 2:
+                st.error("The Patient having moderate infection in Liver, need immediate care, may possible Chronic Liver Disease")
+            if result == 3:
+                st.error("The Patient having severe infection in Liver, need immediate care,Confirm Chronic Liver Disease")
+    ############# File Upload Layout to predict attrition #############
+    file_upload = st.file_uploader('Upload CSV file for Bulk Prediction',type='csv',key='file_uploader')
+    if file_upload is not None:
+        df = pd.read_csv(file_upload) 
+        df = MD.cld_Fun(df)
+        df['class'] =cld_model.predict(df)
+        
+        c1,c2 = st.columns(2)
+        c1.success(f"Health Patients {df[df['class']==0].shape[0]}")
+        c1.dataframe(df[df['class']==0])
+        c2.error(f"Mild Live Infection Patients {df[df['class']==1].shape[0]}")
+        c2.dataframe(df[df['class']==1])
+
+        c1,c2 = st.columns(2)
+        c1.error(f"Moderate Live Infection Patients (Possible Cld) {df[df['class']==2].shape[0]}")
+        c1.dataframe(df[df['class']==2])
+        c2.error(f"Severe Live Infection Patients (CLD) {df[df['class']==3].shape[0]}")
+        c2.dataframe(df[df['class']==1])
+
+def patkinsons_Prediction():
+    c1,c2 = st.columns([0.2,2])
+    c1.image('parkinsions_logo.png')
+    c2.title("Parkinsons Disease Prediction")
+
+
 
     
 
 
 
 # Navigation
-st.navigation([Ckd_Home,Ckd_Prediction],position='top').run()
+st.navigation([Ckd_Home,liver_Home,patkinsons_Prediction],position='top').run()
