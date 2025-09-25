@@ -48,3 +48,6 @@ class Multi_disease:
                 'albumin_and_globulin_ratio' ]]
             
             return df
+    
+    def pd_Fun(self,df):
+            pass
