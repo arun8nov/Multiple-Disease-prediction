@@ -17,7 +17,7 @@ st.set_page_config(page_title='Multiple Diseases Prediction',
 
 
 # Chronic Kidney Dieses Prdiction Function
-def Ckd_Home():
+def CKD_Disease_Prediction():
     c1,c2 = st.columns([0.2,2])
     c1.image('ckd_logo.png')
     c2.title("Chronic Kidney Disease Prediction") # Seeting up Logo and Title
@@ -133,7 +133,7 @@ def Ckd_Home():
         
 
 # Chronic Liver Dieses Prediction Function 
-def liver_Home():
+def Liver_Disease_Prediction():
     c1,c2 = st.columns([0.2,2])
     c1.image('cld_logo.png')
     c2.title("Chronic Liver Disease Prediction") # Icon and Title
@@ -214,7 +214,7 @@ def liver_Home():
     st.markdown(open('cld_info.md','r',encoding='utf-8').read(), unsafe_allow_html=True) # Gneral lab result ranges for CLD cases
 
 # Function for Parkinsond Dieses Prediction 
-def patkinsons_Prediction():
+def Parkinsons_Disease_Prediction():
     c1,c2 = st.columns([0.2,2])
     c1.image('parkinsons_logo.png')
     c2.title("Parkinsons Disease Prediction") # Logo and Title
@@ -339,4 +339,4 @@ def patkinsons_Prediction():
 
 
 # Navigation
-st.navigation([Ckd_Home,liver_Home,patkinsons_Prediction],position='top').run() 
+st.navigation([CKD_Disease_Prediction,Liver_Disease_Prediction,Parkinsons_Disease_Prediction],position='top').run() 
